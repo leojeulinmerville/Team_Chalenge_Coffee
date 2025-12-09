@@ -15,7 +15,7 @@ warnings.filterwarnings('ignore')
 # Page config
 st.set_page_config(
     page_title="Café Business Intelligence Dashboard",
-    page_icon="☕",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -130,18 +130,18 @@ metrics = calculate_metrics(df)
 # ============================================================================
 # HEADER
 # ============================================================================
-st.markdown('<h1 class="main-header">☕ Café Business Intelligence Dashboard</h1>', unsafe_allow_html=True)
+st.title("Café Business Intelligence Dashboard")
 st.markdown("**Interactive Strategy Simulator** | Make data-driven decisions in real-time")
-
-st.divider()
+st.markdown("---")
 
 # ============================================================================
 # SIDEBAR - FILTERS & INPUTS
 # ============================================================================
 with st.sidebar:
-    st.header("⚙️ Simulation Controls")
+    st.header("Simulation Controls")
+    st.markdown("")
     
-    st.subheader("📅 Date Range Filter")
+    st.subheader("Date Range Filter")
     date_range = st.date_input(
         "Select Period",
         value=(df['DATE'].min(), df['DATE'].max()),
@@ -155,25 +155,27 @@ with st.sidebar:
     else:
         filtered_df = df
     
-    st.subheader("🌡️ Weather Scenario")
+    st.subheader("Weather Scenario")
     temp_scenario = st.select_slider(
-        "Forecast Temperature (°F)",
+        "Forecast Temperature (degrees F)",
         options=[20, 30, 40, 50, 60, 70, 80, 90, 100],
         value=60
     )
     
-    st.subheader("📆 Day Type")
+    st.markdown("")
+    st.subheader("Day Type")
     day_type = st.radio(
         "Select Day Type",
         ['Weekday', 'Weekend', 'Holiday']
     )
     
-    st.subheader("🎓 School Status")
+    st.markdown("")
+    st.subheader("School Status")
     school_break = st.checkbox("School Break Period")
     
-    st.divider()
+    st.markdown("---")
     
-    st.subheader("💰 Pricing Adjustments")
+    st.subheader("Pricing Adjustments")
     st.caption("Test dynamic pricing scenarios")
     
     burger_price = st.number_input(
@@ -211,7 +213,8 @@ with st.sidebar:
 # ============================================================================
 # KEY METRICS ROW
 # ============================================================================
-st.header("📊 KEY BUSINESS METRICS")
+st.header("KEY BUSINESS METRICS")
+st.markdown("")
 
 col1, col2, col3, col4 = st.columns(4)
 
@@ -249,7 +252,8 @@ st.divider()
 # ============================================================================
 # MENU VOLATILITY INDEX (MVI)
 # ============================================================================
-st.header("🎯 Q1: Menu Volatility Index (MVI)")
+st.header("Q1: Menu Volatility Index (MVI)")
+st.markdown("")
 
 col1, col2 = st.columns([2, 1])
 
@@ -284,40 +288,41 @@ with col1:
     st.plotly_chart(fig_mvi, use_container_width=True)
 
 with col2:
-    st.markdown("### 📋 Risk Classification")
+    st.markdown("### Risk Classification")
+    st.markdown("")
     for idx, row in mvi_data.iterrows():
         if row['MVI'] < 30:
-            risk = "🟢 LOW RISK"
+            risk = "**LOW RISK**"
+            risk_color = "green"
             action = "Stock confidently"
         elif row['MVI'] < 40:
-            risk = "🟡 MEDIUM RISK"
+            risk = "**MEDIUM RISK**"
+            risk_color = "orange"
             action = "Watch forecasts"
         elif row['MVI'] < 50:
-            risk = "🟠 HIGH RISK"
+            risk = "**HIGH RISK**"
+            risk_color = "red"
             action = "Dynamic inventory"
         else:
-            risk = "🔴 EXTREME RISK"
+            risk = "**EXTREME RISK**"
+            risk_color = "red"
             action = "Weather-dependent"
         
-        st.markdown(f"""
-        **{row['ITEM_NAME']}** (MVI: {row['MVI']:.1f})  
-        {risk}  
-        → _{action}_
-        """)
+        st.markdown(f"::{risk_color}[{row['ITEM_NAME']} - MVI: {row['MVI']:.1f}]")
+        st.markdown(f"{risk}")
+        st.markdown(f"Action: _{action}_")
+        st.markdown("")
 
-st.markdown("""
-<div class="insight-box">
-    <strong>💡 Business Insight:</strong> BURGER (MVI: 28) is your operational anchor — predictable demand regardless of conditions. 
-    COKE and LEMONADE (MVI: 50+) require weather-based inventory management to avoid waste and stockouts.
-</div>
-""", unsafe_allow_html=True)
+st.info("**Business Insight:** BURGER (MVI: 28) is your operational anchor — predictable demand regardless of conditions. COKE and LEMONADE (MVI: 50+) require weather-based inventory management to avoid waste and stockouts.")
 
-st.divider()
+st.markdown("---")
+st.markdown("")
 
 # ============================================================================
 # DEMAND FORECAST
 # ============================================================================
-st.header("📈 Q2: Demand Forecasting Engine")
+st.header("Q2: Demand Forecasting Engine")
+st.markdown("")
 
 # Temperature impact analysis
 temp_bins = pd.cut(filtered_df['AVERAGE_TEMPERATURE'], bins=[0,40,55,70,85,100])
@@ -350,7 +355,7 @@ predicted_demand = {item: base_demand.get(item, 0) * demand_multipliers.get(item
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🔮 Predicted Demand (Next Day)")
+    st.subheader("Predicted Demand (Next Day)")
     st.caption(f"Scenario: {temp_scenario}°F, {day_type}" + (", School Break" if school_break else ""))
     
     for item, qty in sorted(predicted_demand.items(), key=lambda x: -x[1]):
@@ -367,7 +372,7 @@ with col1:
     st.info(f"**Total Volume:** {total_predicted:.0f} items")
 
 with col2:
-    st.subheader("🌡️ Temperature Sensitivity")
+    st.subheader("Temperature Sensitivity")
     
     fig_temp = go.Figure()
     
@@ -396,19 +401,16 @@ with col2:
     
     st.plotly_chart(fig_temp, use_container_width=True)
 
-st.markdown("""
-<div class="insight-box">
-    <strong>💡 Business Insight:</strong> Use 3-day weather forecasts to adjust inventory. 
-    If 75°F+ is forecasted, increase COKE stock by 80%, reduce LEMONADE in winter by 70%.
-</div>
-""", unsafe_allow_html=True)
+st.info("**Business Insight:** Use 3-day weather forecasts to adjust inventory. If 75°F+ is forecasted, increase COKE stock by 80%, reduce LEMONADE in winter by 70%.")
 
-st.divider()
+st.markdown("---")
+st.markdown("")
 
 # ============================================================================
 # PROFIT CORE (80/20)
 # ============================================================================
-st.header("💰 Q3: Profit Core Analysis")
+st.header("Q3: Profit Core Analysis (80/20)")
+st.markdown("")
 
 col1, col2 = st.columns([2, 1])
 
@@ -457,7 +459,8 @@ with col1:
     st.plotly_chart(fig_profit, use_container_width=True)
 
 with col2:
-    st.markdown("### 📊 Strategic Allocation")
+    st.markdown("### Strategic Allocation")
+    st.markdown("")
     
     profit_core = revenue_data[revenue_data['CUMULATIVE_PCT'] <= 80]
     
@@ -470,27 +473,24 @@ with col2:
     
     st.markdown("**Core Items:**")
     for item in profit_core['ITEM_NAME']:
-        st.markdown(f"✅ **{item}**")
+        st.markdown(f"- **{item}**")
     
     non_core = revenue_data[revenue_data['CUMULATIVE_PCT'] > 80]
     if len(non_core) > 0:
         st.markdown("**Non-Core Items:**")
         for item in non_core['ITEM_NAME']:
-            st.markdown(f"⚠️ {item} - Consider seasonal")
+            st.markdown(f"- {item} (Consider seasonal)")
 
-st.markdown("""
-<div class="insight-box">
-    <strong>💡 Business Insight:</strong> BURGER + COFFEE generate 83% of revenue. 
-    Invest in quality (premium ingredients), expand options (sizes, flavors), and train staff to upsell these relentlessly.
-</div>
-""", unsafe_allow_html=True)
+st.info("**Business Insight:** BURGER + COFFEE generate 83% of revenue. Invest in quality (premium ingredients), expand options (sizes, flavors), and train staff to upsell these relentlessly.")
 
-st.divider()
+st.markdown("---")
+st.markdown("")
 
 # ============================================================================
 # PRICE OPTIMIZATION SIMULATOR
 # ============================================================================
-st.header("💵 Q4: Price Optimization Simulator")
+st.header("Q4: Price Optimization Simulator")
+st.markdown("")
 
 # Current pricing
 current_prices = {
@@ -529,7 +529,7 @@ for item in current_prices:
 col1, col2 = st.columns([1, 1])
 
 with col1:
-    st.subheader("💰 Pricing Scenario Results")
+    st.subheader("Pricing Scenario Results")
     
     total_base = sum([v['base_revenue'] for v in revenue_impact.values()])
     total_new = sum([v['new_revenue'] for v in revenue_impact.values()])
@@ -542,7 +542,7 @@ with col1:
     )
     
     for item, impact in revenue_impact.items():
-        with st.expander(f"📊 {item} Detailed Impact"):
+        with st.expander(f"{item} - Detailed Impact"):
             col_a, col_b = st.columns(2)
             with col_a:
                 st.metric("Current Price", f"${current_prices[item]:.2f}")
@@ -554,42 +554,39 @@ with col1:
                          delta=f"${impact['change_dollar']:+,.0f}")
 
 with col2:
-    st.subheader("🎯 Recommended Pricing Strategy")
+    st.subheader("Recommended Pricing Strategy")
     
     # Create pricing recommendations
     recommendations = []
     
     if day_type == 'Weekend':
-        recommendations.append("🔹 **Weekend Premium:** Charge +5-10% on BURGER and COFFEE")
+        recommendations.append("- **Weekend Premium:** Charge +5-10% on BURGER and COFFEE")
     elif day_type == 'Holiday':
-        recommendations.append("🔹 **Holiday Surge:** Charge +10-15% across all items")
+        recommendations.append("- **Holiday Surge:** Charge +10-15% across all items")
     
     if temp_scenario > 75:
-        recommendations.append("🔹 **Hot Weather:** Increase COKE price to $3.00, reduce COFFEE to $3.00")
+        recommendations.append("- **Hot Weather:** Increase COKE price to $3.00, reduce COFFEE to $3.00")
     elif temp_scenario < 50:
-        recommendations.append("🔹 **Cold Weather:** Increase COFFEE price to $3.75, reduce COKE to $2.00")
+        recommendations.append("- **Cold Weather:** Increase COFFEE price to $3.75, reduce COKE to $2.00")
     
-    recommendations.append("🔹 **Bundle Strategy:** Offer 'Burger + Drink' for $17 (vs $18 separate)")
-    recommendations.append("🔹 **Happy Hour:** Reduce prices 3-5 PM to drive volume during slow period")
+    recommendations.append("- **Bundle Strategy:** Offer 'Burger + Drink' for $17 (vs $18 separate)")
+    recommendations.append("- **Happy Hour:** Reduce prices 3-5 PM to drive volume during slow period")
     
     for rec in recommendations:
         st.markdown(rec)
     
     st.info("**Price Elasticity Note:** Customers are 30% less sensitive to price increases on weekends and holidays.")
 
-st.markdown("""
-<div class="insight-box">
-    <strong>💡 Business Insight:</strong> You're leaving $40K-$60K on the table annually. 
-    Weekend BURGER buyers will pay $16.25 (vs $15.50). Cold-day coffee drinkers will pay $3.75 (vs $3.50). Test for 4 weeks.
-</div>
-""", unsafe_allow_html=True)
+st.info("**Business Insight:** You're leaving $40K-$60K on the table annually. Weekend BURGER buyers will pay $16.25 (vs $15.50). Cold-day coffee drinkers will pay $3.75 (vs $3.50). Test for 4 weeks.")
 
-st.divider()
+st.markdown("---")
+st.markdown("")
 
 # ============================================================================
 # CUSTOMER SEGMENTATION
 # ============================================================================
-st.header("👥 Q5: Customer Segmentation Analysis")
+st.header("Q5: Customer Segmentation Analysis")
+st.markdown("")
 
 # Calculate segment values
 weekend_revenue = filtered_df[filtered_df['IS_WEEKEND'] == 1].groupby('DATE')['REVENUE'].sum().mean()
@@ -629,7 +626,8 @@ with col1:
     st.plotly_chart(fig_segments, use_container_width=True)
 
 with col2:
-    st.markdown("### 🎯 Segment Strategies")
+    st.markdown("### Segment Strategies")
+    st.markdown("")
     
     st.markdown("""
     **Weekend Warriors** (+45%)  
@@ -646,7 +644,8 @@ with col2:
     """)
 
 # Product preference by segment
-st.subheader("📊 Product Preferences by Segment")
+st.subheader("Product Preferences by Segment")
+st.markdown("")
 
 cols = st.columns(4)
 
@@ -661,52 +660,49 @@ for idx, (seg_name, seg_data) in enumerate(segments_items.items()):
     with cols[idx]:
         st.markdown(f"**{seg_name}**")
         top_item = seg_data.idxmax()
-        st.success(f"🏆 {top_item}")
+        st.success(f"Top: {top_item}")
         for item in seg_data.sort_values(ascending=False).index:
             pct = seg_data[item] / seg_data.sum() * 100
             st.progress(pct/100, text=f"{item}: {pct:.0f}%")
 
-st.markdown("""
-<div class="insight-box">
-    <strong>💡 Business Insight:</strong> Tailor menu and promotions to segments. 
-    Weekend families want bundles. Holiday groups pre-order. Weather-driven respond to urgency. School-break want kids options.
-</div>
-""", unsafe_allow_html=True)
+st.info("**Business Insight:** Tailor menu and promotions to segments. Weekend families want bundles. Holiday groups pre-order. Weather-driven respond to urgency. School-break want kids options.")
 
-st.divider()
+st.markdown("---")
+st.markdown("")
 
 # ============================================================================
 # SIMULATION SUMMARY
 # ============================================================================
-st.header("🎯 Simulation Summary & Recommendations")
+st.header("Simulation Summary & Recommendations")
+st.markdown("")
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.markdown("### 📈 Projected Impact")
+    st.markdown("### Projected Impact")
     st.metric("Revenue Change", f"${total_change:,.0f}", delta=f"{total_change/total_base*100:+.1f}%")
     st.metric("Recommended Staff", f"{int(staff_needed)} people")
     st.metric("Expected Volume", f"{total_predicted:.0f} items")
 
 with col2:
-    st.markdown("### ⚡ Priority Actions")
+    st.markdown("### Priority Actions")
     st.markdown("""
-    1. ✅ Adjust prices based on scenario
-    2. ✅ Schedule staff accordingly
-    3. ✅ Prep inventory for forecast
-    4. ✅ Update menu boards
-    5. ✅ Train staff on segment strategies
+    1. Adjust prices based on scenario
+    2. Schedule staff accordingly
+    3. Prep inventory for forecast
+    4. Update menu boards
+    5. Train staff on segment strategies
     """)
 
 with col3:
-    st.markdown("### 💰 Profit Potential")
+    st.markdown("### Profit Potential")
     annual_impact = total_change * 365
     st.success(f"**Annual Impact:** ${annual_impact:,.0f}")
     st.info("**Implementation:** Start tomorrow")
     st.warning("**Track KPIs:** Revenue/hr, waste %, forecast accuracy")
 
 # Download simulation results
-if st.button("📥 Export Simulation Results"):
+if st.button("Export Simulation Results"):
     results = {
         'Scenario': [f"{temp_scenario}°F, {day_type}" + (", School Break" if school_break else "")],
         'Predicted_Volume': [total_predicted],
